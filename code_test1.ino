@@ -19,10 +19,11 @@ void sendSMS(String text) {
   delay(1000);
   GSM.print("AT+CMGS=\"+237688544825\"\r"); // Replace with recipient number
   delay(1000);
-  GSM.print(text); // Send message text
+  GSM.print(text); // Send message text]
   delay(1000);
   GSM.write(0x1A); // Send Ctrl+Z to finalize message
-}
+ 
+}  
 
 // Function to initialize GPS on SIM808
 //
@@ -59,8 +60,10 @@ String getGPSInfo() {
   // Calibrate the GPS coordinate base on trust data.
   latDecimal = latDecimal * latCorrectionRatio;
   lonDecimal = lonDecimal * lonCorrectionRatio;
- 
-  return "https://www.google.com/maps?q=" + String(latDecimal) + "," + String(lonDecimal);
+
+String googleMapsLink = "https://www.google.com/maps?q=" + String(latDecimal) + "," + String(lonDecimal);
+
+  return googleMapsLink;
 }
 
 String getGPSInfoOfTheNearestAntena(){
@@ -87,9 +90,10 @@ String getGPSInfoOfTheNearestAntena(){
   float lat = latStr.toFloat();
   float lon = lonStr.toFloat();
   
-  return "https://www.google.com/maps?q=" + String(lat) + "," + String(lon);
-}
+ String googleMapsLink = "https://www.google.com/maps?q=" + String(latStr) + "," + String(lonStr);
 
+  return googleMapsLink;
+}
 
 void setup() {
   // Configure the bandwidth for the communication
@@ -101,15 +105,22 @@ void setup() {
   Serial.println("Initializing GPS...");
   GSM.println("AT+CGPSPWR=1"); // Turn on GPS
   delay(2000);
+  
   GSM.print("AT+SAPBR=1,1"); // Activate bearer context
   delay(2000);
   
-
   sendSMS("Device has started!");
 }
 
 void loop() {
   // Simulating GPS retrieval every 10 seconds
   delay(5000);
-  Serial.println(getGPSInfoOfTheNearestAntena());
+  
+   String googleMapLink = getGPSInfo();
+  Serial.println("GPS: " + googleMapLink);
+
+  String googleMapsLink = getGPSInfoOfTheNearestAntena();
+  Serial.println("GSM: " +  googleMapLink );
+
+  sendSMS("My position" + googleMapLink);
 }
